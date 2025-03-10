@@ -1,1 +1,0 @@
-# eshopping_automation
