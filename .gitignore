@@ -1,0 +1,17 @@
+# Node modules
+node_modules/
+
+# Playwright-related
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+*.log
+
+# Ignore Allure reports locally but NOT in Jenkins
+allure-report/
+allure-results/
