@@ -2,31 +2,27 @@ pipeline {
     agent any
 
     environment {
-        NODE_VERSION = '18.17.1' // Ensure Node.js version
-    }
-
-    tools {
-        nodejs 'NodeJS' // Use Jenkins NodeJS Plugin
+        NODE_VERSION = '18.17.1'
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/yourusername/your-repo.git'
+                git branch: 'master', url: 'https://github.com/Ayzal01/eshopping_automation.git'
             }
         }
 
         stage('Setup Node.js & Install Dependencies') {
             steps {
-                bat 'where node || echo Node.js not found, please install it'
-                bat 'npm install --force' // Installs all required dependencies
-                bat 'npx playwright install --with-deps' // Installs Playwright browsers & dependencies
+                bat 'node -v || echo Node.js not found, install it manually if needed'
+                bat 'npm install --force'
+                bat 'npx playwright install --with-deps'
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                bat 'npx playwright test --reporter=line,allure-playwright' // Ensure Allure report is generated
+                bat 'npx playwright test --reporter=line,allure-playwright'
             }
         }
 
