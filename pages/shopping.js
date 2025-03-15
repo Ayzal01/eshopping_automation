@@ -42,7 +42,6 @@ class ShoppingPage {
                     const buyItem = await this.items.nth(i).locator(selector);
 
                     for (let j = 0; j < counts; j++) {
-                        await buyItem.scrollIntoViewIfNeeded();
                         await buyItem.click();
                         await this.page.waitForLoadState('networkidle');
 
