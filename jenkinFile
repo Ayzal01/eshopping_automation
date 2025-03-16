@@ -3,6 +3,11 @@ pipeline {
 
     environment {
         NODE_VERSION = '18.17.1'
+        ALLURE_COMMANDLINE = 'C:\\Users\\Administrator\\scoop\\apps\\allure\\current\\bin\\allure.bat' // Full path to the allure.bat file
+    }
+
+    tools {
+        nodejs 'NodeJS' // Ensure you have a Node.js tool configured in Jenkins
     }
 
     stages {
@@ -14,8 +19,8 @@ pipeline {
 
         stage('Setup Node.js & Install Dependencies') {
             steps {
-                bat 'node -v || echo Node.js not found, install it manually if needed'
-                bat 'npm install --force'
+                bat 'node -v || echo "Node.js not found, please install manually"'
+                bat 'npm ci' // Use npm ci for cleaner installs
                 bat 'npx playwright install --with-deps'
             }
         }
@@ -28,7 +33,7 @@ pipeline {
 
         stage('Verify Allure Results') {
             steps {
-                bat 'dir allure-results'
+                bat 'if exist allure-results (echo "Allure results found" && dir allure-results) else (echo "No Allure results found!")'
             }
         }
 
@@ -40,17 +45,23 @@ pipeline {
 
         stage('Archive Allure Results') {
             steps {
-                bat 'if exist allure-results echo "Allure results found" && dir allure-results'
                 archiveArtifacts artifacts: 'allure-results/**', fingerprint: true
             }
         }
 
         stage('Publish Allure Report') {
             steps {
-                allure([
-                    results: [[path: 'allure-results']],
-                    reportBuildPolicy: 'ALWAYS'
-                ])
+                script {
+                    def allureAvailable = fileExists('allure-results')
+                    if (allureAvailable) {
+                        allure([ 
+                            results: [[path: 'allure-results']], 
+                            reportBuildPolicy: 'ALWAYS' 
+                        ])
+                    } else {
+                        echo "Skipping Allure report publishing, results not found."
+                    }
+                }
             }
         }
     }
@@ -58,6 +69,9 @@ pipeline {
     post {
         always {
             echo "Pipeline execution completed."
+        }
+        failure {
+            echo "Pipeline failed. Please check the logs for details."
         }
     }
 }
