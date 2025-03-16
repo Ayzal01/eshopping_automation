@@ -35,4 +35,19 @@ pipeline {
         stage('Verify Allure Results') {
             steps {
                 bat 'if exist allure-results (echo "Allure results found" && dir allure-results) else (echo "No Allure results found!")'
-  
+            }
+        }
+
+        stage('Publish Allure Report') {
+            steps {
+                // Publish Allure report using the Allure Jenkins plugin
+                allure([
+                    includeProperties: false, 
+                    jdk: '', 
+                    reportBuildPolicy: 'ALWAYS', 
+                    results: [[path: 'allure-results']]
+                ])
+            }
+        }
+    }
+}
